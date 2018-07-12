@@ -34,9 +34,10 @@ for root, dirs, filenames in os.walk(indir):
 				size = line[13:17]
 				isComplete = True
 
+
 			if isComplete:
 				r = {packetId:{'timeStamp':timeStamp,'Source IP':source,'Destination IP':destination,'Destination Port':destinationPort,'Size':size,'File Name':fileName}}
 				with open('TestResults/Compression/dataAnalysis/info/'+f[:-4] +'.json', 'a') as feedsjson:
 					json.dump(r, feedsjson)
 					feedsjson.write(os.linesep)
-				exit()
+				isComplete = False
