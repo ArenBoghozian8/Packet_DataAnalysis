@@ -15,6 +15,9 @@ for i in range(len(experiments)):
 	os.mkdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo')
 
 	for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis'):
+
+		if f == 'JsonInfo':
+			continue
 			
 		f2 = open('TestResults/'+experiments[i]+'/dataAnalysis/'+f,'r')
 
