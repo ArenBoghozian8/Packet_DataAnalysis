@@ -30,7 +30,8 @@ for i in range(len(experiments)):
 
 			for line in f2:
 				if 'Data:' in line:
-					packetId = line[10:14]
+					packetIdHex = line[10:14]
+					packetId = int(str(packetIdHex),16)
 				elif 'Arrival Time:' in line:
 					timeStamp = line[18:-1]
 				elif 'Source' in line and ('Source Port:' not in line and 'Source: Alcatel-_8d:ac:f1 (e8:e7:32:8d:ac:f1)' not in line):
