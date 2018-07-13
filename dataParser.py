@@ -47,7 +47,7 @@ for i in range(len(experiments)):
 
 				if isComplete:
 					r = {packetId:{'timeStamp':timeStamp,'Source IP':source,'Destination IP':destination,'Destination Port':destinationPort,'Size':size,'File Name':fileName}}
-					with open('TestResults/Compression/dataAnalysis/JsonInfo/'+f[:-4] +'.json', 'a') as feedsjson:
+					with open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/'+f[:-4] +'.json', 'a') as feedsjson:
 						json.dump(r, feedsjson)
 						feedsjson.write(os.linesep)
 					isComplete = False
