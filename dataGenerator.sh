@@ -26,3 +26,5 @@ for file in *.pcap; do
     [ -e "$file" ] || continue
     tshark -V -r "$file" > "dataAnalysis/${file%.pcap}.txt"
 done
+
+python dataParser.py
