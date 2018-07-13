@@ -6,6 +6,7 @@ import pandas as pd
 import os
 import glob
 import json
+import csv
 
 class jasonParser:
 
@@ -56,13 +57,52 @@ class jasonParser:
 						isComplete = False
 
 
+class structureData:
+
+	def __init__(self):
+		self.arr = []
+
+	def restructure(self, experiments):
+		
+		for i in range(len(experiments)):
+			os.mkdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData')
+			for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo'):
+				arr = []
+				tempDict = {}
+				finalDict = {}
+
+				for line in open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/'+f, 'r'):
+					arr.append(json.loads(line))
+				for x in range(len(arr)):
+					for key in arr[x].keys():
+						tempDict[key] = arr[x][key]['timeStamp']
+				for x in range(1,5001):
+					if x not in tempDict:
+						finalDict[x] = -1
+					else:
+						finalDict[x] = tempDict[x]
+
+				print(tempDict)
+				exit()
+'''
+				csv_columns = ['ID','loss vs No loss']
+				with open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData'+f[:-5]+'.csv','a') as csvfile:
+					writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+					writer.writeheader()
+					for data in finalDict:
+						writer.writerow(data)
+
+					exit()'''
+
 
 
 def main():
 	experiments = ['Compression','SPQ','ShapingFinal']
-	parse = jasonParser()
+	#parse = jasonParser()
+	#parse.generateJason(experiments)
 
-	parse.generateJason(experiments)
+	struct = structureData()
+	struct.restructure(experiments)
 
 
 main()
