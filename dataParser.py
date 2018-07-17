@@ -101,9 +101,10 @@ class graph():
 
 	def draw(self, ignore_Num, experiments,sourceIp):
 		for i in range(len(experiments)):
-			for country in range(len(sourceIp)):
+			for country in sourceIp:
 				for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData'):
-					print(f)
+					if country in f:
+						print(f)
 
 
 
