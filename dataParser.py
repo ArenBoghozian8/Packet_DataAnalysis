@@ -94,13 +94,31 @@ class structureData:
 					w.writerow([key, val])
 
 
-def main():
-	experiments = ['Compression','SPQ','ShapingFinal']
-	parse = jasonParser()
-	parse.generateJason(experiments)
+class graph():
+	
+	def __init__(self):
+		self.ingore = 0
 
-	struct = structureData()
-	struct.restructure(experiments)
+	def draw(self, ignore_Num, experiments):
+		for i in range(len(experiments)):
+			for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData'):
+				print(f)
+
+
+
+def main():
+	sourceIp = {'131.179.150.70':'planetlab1.cs.ucla.edu','131.179.150.72':'planetlab2.cs.ucla.edu', '192.16.125.12':'planetlab-2.ssvl.kth.se', '165.242.90.129':'pl2.sos.info.hiroshima-cu.ac.jp', '130.195.4.68':'planetlab1.ecs.vuw.ac.nz', '129.63.159.102':'planetlab2.cs.uml.edu', '192.91.235.230':'pluto.cs.brown.edu', '142.103.2.2':'planetlab2.cs.ubc.ca'}
+	
+	experiments = ['Compression','SPQ','ShapingFinal']
+	
+	#parse = jasonParser()
+	#parse.generateJason(experiments)
+
+	#struct = structureData()
+	#struct.restructure(experiments)
+
+	g = graph()
+	g.draw(0, experiments)
 
 
 main()
