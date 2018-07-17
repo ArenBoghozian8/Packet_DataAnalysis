@@ -88,7 +88,7 @@ class structureData:
 					else:
 						finalDict[str(x)] = tempDict[str(x)]
 
-				w = csv.writer(open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+f[:-5]+'('+source_ip+')'+'.csv', 'w'))
+				w = csv.writer(open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+f[:-5]+'( '+source_ip+' )'+'.csv', 'w'))
 				w.writerow(['ID','Loss vs No Loss'])
 				for key, val in finalDict.items():
 					w.writerow([key, val])
@@ -99,10 +99,11 @@ class graph():
 	def __init__(self):
 		self.ingore = 0
 
-	def draw(self, ignore_Num, experiments):
+	def draw(self, ignore_Num, experiments,sourceIp):
 		for i in range(len(experiments)):
-			for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData'):
-				print(f)
+			for country in range(len(sourceIp)):
+				for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData'):
+					print(f)
 
 
 
@@ -114,11 +115,11 @@ def main():
 	#parse = jasonParser()
 	#parse.generateJason(experiments)
 
-	#struct = structureData()
-	#struct.restructure(experiments)
+	struct = structureData()
+	struct.restructure(experiments)
 
-	g = graph()
-	g.draw(0, experiments)
+	#g = graph()
+	#g.draw(0, experiments,sourceIp)
 
 
 main()
