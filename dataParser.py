@@ -88,11 +88,10 @@ class structureData:
 					else:
 						finalDict[str(x)] = tempDict[str(x)]
 
-				w = csv.writer(open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+f[:-5]+'('')'+'.csv', 'w'))
+				w = csv.writer(open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+f[:-5]+'('+source_ip+')'+'.csv', 'w'))
 				w.writerow(['ID','Loss vs No Loss'])
 				for key, val in finalDict.items():
 					w.writerow([key, val])
-					'''
 
 
 def main():
