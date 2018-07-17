@@ -67,35 +67,38 @@ class structureData:
 		for i in range(len(experiments)):
 			os.mkdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData')
 			for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo'):
-				
+			
 				if f == 'structuredData':
 					continue
 
 				arr = []
 				tempDict = {}
 				finalDict = {}
+				source_ip = ""
 
 				for line in open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/'+f, 'r'):
 					arr.append(json.loads(line))
 				for x in range(len(arr)):
 					for key in arr[x].keys():
 						tempDict[key] = arr[x][key]['timeStamp']
+						source_ip = arr[x][key]['Source IP']
 				for x in range(1,5001):
 					if str(x) not in tempDict:
 						finalDict[str(x)] = -1
 					else:
 						finalDict[str(x)] = tempDict[str(x)]
 
-				w = csv.writer(open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+f[:-5]+'.csv', 'w'))
+				w = csv.writer(open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+f[:-5]+'('')'+'.csv', 'w'))
 				w.writerow(['ID','Loss vs No Loss'])
 				for key, val in finalDict.items():
 					w.writerow([key, val])
+					'''
 
 
 def main():
 	experiments = ['Compression','SPQ','ShapingFinal']
-	parse = jasonParser()
-	parse.generateJason(experiments)
+	#parse = jasonParser()
+	#parse.generateJason(experiments)
 
 	struct = structureData()
 	struct.restructure(experiments)
