@@ -115,11 +115,11 @@ def main():
 	#parse = jasonParser()
 	#parse.generateJason(experiments)
 
-	struct = structureData()
-	struct.restructure(experiments)
+	#struct = structureData()
+	#struct.restructure(experiments)
 
-	#g = graph()
-	#g.draw(0, experiments,sourceIp)
+	g = graph()
+	g.draw(0, experiments,sourceIp)
 
 
 main()
