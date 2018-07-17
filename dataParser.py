@@ -96,8 +96,8 @@ class structureData:
 
 def main():
 	experiments = ['Compression','SPQ','ShapingFinal']
-	#parse = jasonParser()
-	#parse.generateJason(experiments)
+	parse = jasonParser()
+	parse.generateJason(experiments)
 
 	struct = structureData()
 	struct.restructure(experiments)
