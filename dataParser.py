@@ -7,6 +7,9 @@ import os
 import glob
 import json
 import csv
+import pandas as pd
+import time
+from datetime import datetime
 
 class jasonParser:
 
@@ -65,6 +68,7 @@ class structureData:
 	def restructure(self, experiments):
 		
 		for i in range(len(experiments)):
+			print(experiments[i])
 			os.mkdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData')
 			for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo'):
 			
@@ -80,7 +84,9 @@ class structureData:
 					arr.append(json.loads(line))
 				for x in range(len(arr)):
 					for key in arr[x].keys():
-						tempDict[key] = arr[x][key]['timeStamp']
+						datetime_object = datetime.strptime(str(arr[x][key]['timeStamp'][:-7]), '%b %d, %Y %H:%M:%S.%f')
+						#tempDict[key] = arr[x][key]['timeStamp'][:-7]
+						tempDict[key] = time.mktime( (datetime_object.year, datetime_object.month, datetime_object.day, datetime_object.hour, datetime_object.minute, datetime_object.second, 0, 0, 1) )
 						source_ip = arr[x][key]['Source IP']
 				for x in range(1,5001):
 					if str(x) not in tempDict:
@@ -104,7 +110,9 @@ class graph():
 			for country in sourceIp:
 				for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData'):
 					if country in f:
-						print(f)
+						df = pd.read_csv('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+f)
+						print(df.groupby('Loss vs No Loss').count())
+						exit()
 
 
 
@@ -116,11 +124,11 @@ def main():
 	#parse = jasonParser()
 	#parse.generateJason(experiments)
 
-	#struct = structureData()
-	#struct.restructure(experiments)
+	struct = structureData()
+	struct.restructure(experiments)
 
-	g = graph()
-	g.draw(0, experiments,sourceIp)
+	#g = graph()
+	#g.draw(0, experiments,sourceIp)
 
 
 main()
