@@ -89,13 +89,16 @@ class structureData:
 				finalDict = {}
 				source_ip = ""
 
+				#Append all the json information into an array
 				for line in open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/'+f, 'r'):
 					arr.append(json.loads(line))
+				#iterate through all the jason information insdie the array 
 				for x in range(len(arr)):
 					for key in arr[x].keys():
 						datetime_object = datetime.strptime(str(arr[x][key]['timeStamp'][:-7]), '%b %d, %Y %H:%M:%S.%f')
 						tempDict[key] = time.mktime( (datetime_object.year, datetime_object.month, datetime_object.day, datetime_object.hour, datetime_object.minute, datetime_object.second, 0, 0, 1) )
 						source_ip = arr[x][key]['Source IP']
+				# If packet is recived we insert info dict with time stamp other wise we give it -1
 				for x in range(1,5001):
 					if str(x) not in tempDict:
 						finalDict[str(x)] = -1
@@ -107,13 +110,13 @@ class structureData:
 				for key, val in finalDict.items():
 					w.writerow([key, val])
 
-
-class graph():
+# Combines all the experiments into one csv file for data analysis
+class CombineExperiments():
 	
 	def __init__(self):
 		self.ingore = 0
 
-	def draw(self, ignore_Num, experiments,sourceIp):
+	def combine(self, ignore_Num, experiments,sourceIp):
 		for i in range(len(experiments)):
 			w = csv.writer(open( experiments[i]+'.csv', 'w'))
 			w.writerow(['Time','Country','Total Packets', 'Size', 'base Drop', 'Base PCAP', 'disc Drop', 'Disc PCAP'])
@@ -177,8 +180,8 @@ def main():
 	#struct = structureData()
 	#struct.restructure(experiments)
 
-	g = graph()
-	g.draw(0, experiments,sourceIp)
+	g = CombineExperiments()
+	g.combine(0, experiments,sourceIp)
 
 
 main()
