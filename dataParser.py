@@ -11,6 +11,7 @@ import pandas as pd
 import time
 from datetime import datetime
 
+# Converts the text file information into a json file
 class jasonParser:
 
 	def __init__(self):
@@ -23,11 +24,14 @@ class jasonParser:
 		self.fileName = ''
 
 	def generateJason(self,experiments):
-
+		
+		# Will loop through all the experiments
 		for i in range(len(experiments)):
 
+			#Creates new directory called JsonInfo
 			os.mkdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo')
 
+			# Reads though each individual text file and ignores any folders	
 			for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis'):
 				if f == 'JsonInfo':
 					continue
@@ -36,6 +40,7 @@ class jasonParser:
 				isComplete = False
 				fileName = f
 
+				# Reads through each ine of text and if given headers are encountered there inforamtion is saved
 				for line in f2:
 					if 'Data:' in line:
 						packetIdHex = line[10:14]
@@ -52,6 +57,7 @@ class jasonParser:
 						size = line[13:17]
 						isComplete = True
 
+					# length is the last information of the text file, we save information and we reset to parse other frames
 					if isComplete:
 						r = {packetId:{'timeStamp':timeStamp,'Source IP':source,'Destination IP':destination,'Destination Port':destinationPort,'Size':size,'File Name':fileName}}
 						with open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/'+f[:-4] +'.json', 'a') as feedsjson:
@@ -59,19 +65,22 @@ class jasonParser:
 							feedsjson.write(os.linesep)
 						isComplete = False
 
-
+# Converts the Json files into csv files
 class structureData:
 
 	def __init__(self):
 		self.arr = []
-
+	
 	def restructure(self, experiments):
 		
+		# Will loop through all the experiments	
 		for i in range(len(experiments)):
-			print(experiments[i])
+			#makes a new folder called structuredData
 			os.mkdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData')
-			for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo'):
 			
+			#goes through all the json files
+			for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo'):
+				#ifnore the folder
 				if f == 'structuredData':
 					continue
 
@@ -134,7 +143,6 @@ class graph():
 								if row["Loss vs No Loss"] == -1:
 									count = count + 1
 								else:
-
 									time = datetime.fromtimestamp(row["Loss vs No Loss"])
 
 							if pairTracker == 1:
@@ -143,6 +151,12 @@ class graph():
 							else:
 								discLoss = count
 								pcap2 = file[:-4]
+
+						elif experiments[i] == 'SPQ':
+							print('SPQ')
+
+						else:
+							print('Shaping')
 
 						if pairTracker == 2:
 							pairTracker = 0
