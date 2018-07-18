@@ -85,8 +85,6 @@ class structureData:
 				for x in range(len(arr)):
 					for key in arr[x].keys():
 						datetime_object = datetime.strptime(str(arr[x][key]['timeStamp'][:-7]), '%b %d, %Y %H:%M:%S.%f')
-						#tempDict[key] = arr[x][key]['timeStamp'][:-7]
-						#time.mktime( (2009, 2, 17, 17, 3, 38, 0, 0, 1) )
 						tempDict[key] = time.mktime( (datetime_object.year, datetime_object.month, datetime_object.day, datetime_object.hour, datetime_object.minute, datetime_object.second, 0, 0, 1) )
 						source_ip = arr[x][key]['Source IP']
 				for x in range(1,5001):
@@ -109,40 +107,48 @@ class graph():
 	def draw(self, ignore_Num, experiments,sourceIp):
 		for i in range(len(experiments)):
 			w = csv.writer(open( experiments[i]+'.csv', 'w'))
-			w.writerow(['Time', 'Total Packets', 'Size', 'base Drop', 'Base PCAP', 'disc Drop', 'Disc PCAP'])
+			w.writerow(['Time','Country','Total Packets', 'Size', 'base Drop', 'Base PCAP', 'disc Drop', 'Disc PCAP'])
 
 			for country in sourceIp:
+				pairTracker = 0
+				file_array = []
+				pcap1 = ""
+				pcap2 = ""
+				BaseLoss = 0
+				discLoss = 0
+
 				for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData'):
-					if country in f:
-						df = pd.read_csv('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+f)
+					file_array.append(f)
+					file_array.sort()
+
+				for file in file_array:
+					if country in file:
+						df = pd.read_csv('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+file)
 						count = 0
-						pairTracker = 0
 						time = ""
-						BaseLoss = 0;
-						discLoss = 0
 
 						if experiments[i] == 'Compression':
-							count = count + 1
+
+							pairTracker = pairTracker + 1
 							for index, row in df.iterrows():
 								if row["Loss vs No Loss"] == -1:
 									count = count + 1
 								else:
-									time = row["Loss vs No Loss"]
 
-							if count == 1:
+									time = datetime.fromtimestamp(row["Loss vs No Loss"])
+
+							if pairTracker == 1:
 								BaseLoss = count
+								pcap1 = file[:-4]
 							else:
 								discLoss = count
-
-						elif experiments[i] == 'SPQ':
-							print('Hello')
-
-						else:
-							print('Hello again')
+								pcap2 = file[:-4]
 
 						if pairTracker == 2:
 							pairTracker = 0
-							w.writerow([str(time),'5000','1024', str(BaseLoss),'odd', str(discLoss), 'even'])
+							w.writerow([str(time),sourceIp[country],'5000','1024', str(BaseLoss),pcap1, str(discLoss), pcap2])
+							BaseLoss = 0
+							discLoss = 0
 
 
 
