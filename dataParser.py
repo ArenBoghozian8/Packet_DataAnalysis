@@ -113,10 +113,15 @@ class graph():
 					if country in f:
 						df = pd.read_csv('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+f)
 						count = 0
-						for index, row in df.iterrows():
-							if row["Loss vs No Loss"] == -1:
-								count = count + 1
-						print(count)
+						if experiments == 'Compression':
+							for index, row in df.iterrows():
+								if row["Loss vs No Loss"] == -1:
+									count = count + 1
+						elif experiments == 'SPQ':
+							print('Hello')
+
+						else:
+							print('Hello again')
 
 
 
