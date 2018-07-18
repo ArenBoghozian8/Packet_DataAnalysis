@@ -108,20 +108,41 @@ class graph():
 
 	def draw(self, ignore_Num, experiments,sourceIp):
 		for i in range(len(experiments)):
+			w = csv.writer(open( experiments[i]+'.csv', 'w'))
+			w.writerow(['Time', 'Total Packets', 'Size', 'base Drop', 'Base PCAP', 'disc Drop', 'Disc PCAP'])
+
 			for country in sourceIp:
 				for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData'):
 					if country in f:
 						df = pd.read_csv('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+f)
 						count = 0
-						if experiments == 'Compression':
+						pairTracker = 0
+						time = ""
+						BaseLoss = 0;
+						discLoss = 0
+
+						if experiments[i] == 'Compression':
+							count = count + 1
 							for index, row in df.iterrows():
 								if row["Loss vs No Loss"] == -1:
 									count = count + 1
-						elif experiments == 'SPQ':
+								else:
+									time = row["Loss vs No Loss"]
+
+							if count == 1:
+								BaseLoss = count
+							else:
+								discLoss = count
+
+						elif experiments[i] == 'SPQ':
 							print('Hello')
 
 						else:
 							print('Hello again')
+
+						if pairTracker == 2:
+							pairTracker = 0
+							w.writerow([str(time),'5000','1024', str(BaseLoss),'odd', str(discLoss), 'even'])
 
 
 
