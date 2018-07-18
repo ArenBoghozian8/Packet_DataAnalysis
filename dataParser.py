@@ -86,6 +86,7 @@ class structureData:
 					for key in arr[x].keys():
 						datetime_object = datetime.strptime(str(arr[x][key]['timeStamp'][:-7]), '%b %d, %Y %H:%M:%S.%f')
 						#tempDict[key] = arr[x][key]['timeStamp'][:-7]
+						#time.mktime( (2009, 2, 17, 17, 3, 38, 0, 0, 1) )
 						tempDict[key] = time.mktime( (datetime_object.year, datetime_object.month, datetime_object.day, datetime_object.hour, datetime_object.minute, datetime_object.second, 0, 0, 1) )
 						source_ip = arr[x][key]['Source IP']
 				for x in range(1,5001):
@@ -111,8 +112,11 @@ class graph():
 				for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData'):
 					if country in f:
 						df = pd.read_csv('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+f)
-						print(df.groupby('Loss vs No Loss').count())
-						exit()
+						count = 0
+						for index, row in df.iterrows():
+							if row["Loss vs No Loss"] == -1:
+								count = count + 1
+						print(count)
 
 
 
@@ -124,11 +128,11 @@ def main():
 	#parse = jasonParser()
 	#parse.generateJason(experiments)
 
-	struct = structureData()
-	struct.restructure(experiments)
+	#struct = structureData()
+	#struct.restructure(experiments)
 
-	#g = graph()
-	#g.draw(0, experiments,sourceIp)
+	g = graph()
+	g.draw(0, experiments,sourceIp)
 
 
 main()
