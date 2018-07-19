@@ -11,6 +11,8 @@ import pandas as pd
 import time
 from datetime import datetime
 
+
+
 # Converts the text file information into a json file
 class jasonParser:
 
@@ -65,6 +67,8 @@ class jasonParser:
 							feedsjson.write(os.linesep)
 						isComplete = False
 
+
+
 # Converts the Json files into csv files
 class structureData:
 
@@ -80,6 +84,7 @@ class structureData:
 			
 			#goes through all the json files
 			for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo'):
+
 				#ifnore the folder
 				if f == 'structuredData':
 					continue
@@ -92,12 +97,13 @@ class structureData:
 				#Append all the json information into an array
 				for line in open('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/'+f, 'r'):
 					arr.append(json.loads(line))
-				#iterate through all the jason information insdie the array 
+				#iterate through all the jason information inside the array 
 				for x in range(len(arr)):
 					for key in arr[x].keys():
 						datetime_object = datetime.strptime(str(arr[x][key]['timeStamp'][:-7]), '%b %d, %Y %H:%M:%S.%f')
 						tempDict[key] = time.mktime( (datetime_object.year, datetime_object.month, datetime_object.day, datetime_object.hour, datetime_object.minute, datetime_object.second, 0, 0, 1) )
 						source_ip = arr[x][key]['Source IP']
+
 				# If packet is recived we insert info dict with time stamp other wise we give it -1
 				for x in range(1,5001):
 					if str(x) not in tempDict:
@@ -109,6 +115,8 @@ class structureData:
 				w.writerow(['ID','Loss vs No Loss'])
 				for key, val in finalDict.items():
 					w.writerow([key, val])
+
+
 
 # Combines all the experiments into one csv file for data analysis
 class CombineExperiments():
@@ -135,13 +143,16 @@ class CombineExperiments():
 
 				for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData'):
 					file_array.append(f)
-					file_array.sort()
+				file_array.sort()
+	
 
 				for file in file_array:
 					if country in file:
+
 						df = pd.read_csv('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+file)
 						count = 0
 						time = ""
+
 
 						if experiments[i] == 'Compression':
 
@@ -193,8 +204,6 @@ class CombineExperiments():
 								pcap2 = file[:-4]															
 
 
-
-
 						if pairTracker == 2:
 							pairTracker = 0
 							w.writerow([str(time),sourceIp[country],country,'5000','1024', str(BaseLoss),pcap1, str(discLoss), pcap2])
@@ -202,11 +211,10 @@ class CombineExperiments():
 							discLoss = 0
 
 
-
 def main():
 	sourceIp = {'131.179.150.70':'planetlab1.cs.ucla.edu','131.179.150.72':'planetlab2.cs.ucla.edu', '192.16.125.12':'planetlab-2.ssvl.kth.se', '165.242.90.129':'pl2.sos.info.hiroshima-cu.ac.jp', '130.195.4.68':'planetlab1.ecs.vuw.ac.nz', '129.63.159.102':'planetlab2.cs.uml.edu', '192.91.235.230':'pluto.cs.brown.edu', '142.103.2.2':'planetlab2.cs.ubc.ca'}
 	
-	experiments = ['Compression','SPQ','ShapingFinal']
+	experiments = ['Compression','SPQ', 'ShapingFinal']
 	
 	#parse = jasonParser()
 	#parse.generateJason(experiments)
