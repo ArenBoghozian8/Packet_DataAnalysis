@@ -119,7 +119,7 @@ class CombineExperiments():
 	def combine(self, ignore_Num, experiments,sourceIp):
 		for i in range(len(experiments)):
 			w = csv.writer(open( experiments[i]+'.csv', 'w'))
-			w.writerow(['Time','Country','Total Packets', 'Size', 'base Drop', 'Base PCAP', 'disc Drop', 'Disc PCAP'])
+			w.writerow(['test_date','Country','host_ip','num_packets', 'packet_size', 'base_losses_str', 'id_pcap_data', 'discrimination_losses_str', 'id_pcap_data'])
 
 			for country in sourceIp:
 				pairTracker = 0
@@ -128,6 +128,10 @@ class CombineExperiments():
 				pcap2 = ""
 				BaseLoss = 0
 				discLoss = 0
+
+				shapingRow1 = ""
+				shapingRow2 = ""
+				shapingCounter = 0
 
 				for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData'):
 					file_array.append(f)
@@ -159,11 +163,41 @@ class CombineExperiments():
 							print('SPQ')
 
 						else:
-							print('Shaping')
+							pairTracker = pairTracker + 1
+							
+							for index, row in df.iterrows():
+								shapingCounter = shapingCounter + 1
+								
+								if shapingCounter == 1:
+									if row["Loss vs No Loss"] == -1:
+										shapingRow1 = -1
+									else:
+										shapingRow1 = datetime.fromtimestamp(row["Loss vs No Loss"])
+										time = datetime.fromtimestamp(row["Loss vs No Loss"])
+								else:
+									if row["Loss vs No Loss"] == -1:
+										shapingRow2 = -1
+									else:
+										shapingRow2 = datetime.fromtimestamp(row["Loss vs No Loss"])
+
+									if shapingRow1 == -1 or shapingRow2 == -1:
+										count = count + 2
+
+									shapingCounter = 0	
+
+							if pairTracker == 1:
+								discLoss = count
+								pcap1 = file[:-4]
+							else:
+								BaseLoss = count
+								pcap2 = file[:-4]															
+
+
+
 
 						if pairTracker == 2:
 							pairTracker = 0
-							w.writerow([str(time),sourceIp[country],'5000','1024', str(BaseLoss),pcap1, str(discLoss), pcap2])
+							w.writerow([str(time),sourceIp[country],country,'5000','1024', str(BaseLoss),pcap1, str(discLoss), pcap2])
 							BaseLoss = 0
 							discLoss = 0
 
