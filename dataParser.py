@@ -130,8 +130,54 @@ class CombineExperiments():
 	def __init__(self):
 		self.ingore = 0
 
+
+	def getNumberOfPacketsDroped(self,df,experiment):
+		
+		count = 0
+		time = ""
+		shapingRow1 = ""
+		shapingRow2 = ""
+		shapingCounter = 0
+
+
+		if experiment == 'Compression':
+			for index, row in df.iterrows():
+				if row["Loss vs No Loss"] == -1:
+					count = count + 1
+				else:
+					time = datetime.fromtimestamp(row["Loss vs No Loss"])
+
+
+		# Counting pair packets, if one of them is droped, we consider all dropped
+		elif experiment == 'ShapingFinal':
+							
+			for index, row in df.iterrows():
+				shapingCounter = shapingCounter + 1
+								
+				if shapingCounter == 1:
+					if row["Loss vs No Loss"] == -1:
+						shapingRow1 = -1
+					else:
+						shapingRow1 = datetime.fromtimestamp(row["Loss vs No Loss"])
+						time = datetime.fromtimestamp(row["Loss vs No Loss"])
+				else:
+					if row["Loss vs No Loss"] == -1:
+						shapingRow2 = -1
+					else:
+						shapingRow2 = datetime.fromtimestamp(row["Loss vs No Loss"])
+
+					if shapingRow1 == -1 or shapingRow2 == -1:
+						count = count + 2
+
+					shapingCounter = 0
+
+
+		return count,time
+
+
 	# Comines information from all teh relevent text files into one giant csv file for further anaysis
 	def combine(self, ignore_Num, experiments,sourceIp):
+
 		for i in range(len(experiments)):
 			w = csv.writer(open( experiments[i]+'.csv', 'w'))
 			w.writerow(['test_date','Country','host_ip','num_packets', 'packet_size', 'base_losses_str', 'id_pcap_data', 'discrimination_losses_str', 'id_pcap_data'])
@@ -143,10 +189,6 @@ class CombineExperiments():
 				pcap2 = ""
 				BaseLoss = 0
 				discLoss = 0
-
-				shapingRow1 = ""
-				shapingRow2 = ""
-				shapingCounter = 0
 
 				for f in os.listdir('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData'):
 					file_array.append(f)
@@ -164,11 +206,8 @@ class CombineExperiments():
 						if experiments[i] == 'Compression':
 
 							pairTracker = pairTracker + 1
-							for index, row in df.iterrows():
-								if row["Loss vs No Loss"] == -1:
-									count = count + 1
-								else:
-									time = datetime.fromtimestamp(row["Loss vs No Loss"])
+							count,time = self.getNumberOfPacketsDroped(df,experiments[i])
+
 
 							if pairTracker == 1:
 								BaseLoss = count
@@ -177,31 +216,18 @@ class CombineExperiments():
 								discLoss = count
 								pcap2 = file[:-4]
 
+
+
+
 						elif experiments[i] == 'SPQ':
-							print('SPQ')
+							print('SPQ')	
+
+
+
 
 						else:
 							pairTracker = pairTracker + 1
-							
-							for index, row in df.iterrows():
-								shapingCounter = shapingCounter + 1
-								
-								if shapingCounter == 1:
-									if row["Loss vs No Loss"] == -1:
-										shapingRow1 = -1
-									else:
-										shapingRow1 = datetime.fromtimestamp(row["Loss vs No Loss"])
-										time = datetime.fromtimestamp(row["Loss vs No Loss"])
-								else:
-									if row["Loss vs No Loss"] == -1:
-										shapingRow2 = -1
-									else:
-										shapingRow2 = datetime.fromtimestamp(row["Loss vs No Loss"])
-
-									if shapingRow1 == -1 or shapingRow2 == -1:
-										count = count + 2
-
-									shapingCounter = 0	
+							count,time = self.getNumberOfPacketsDroped(df,experiments[i])
 
 							if pairTracker == 1:
 								discLoss = count
@@ -218,73 +244,67 @@ class CombineExperiments():
 							discLoss = 0
 
 
-
-
 class graph():
 
-
 	def parse(ip, data):
-    	x = np.array(data[data['host_ip'] == ip]['test_date'])
-    	y = np.array(data[data['host_ip'] == ip]['discrimination_losses_str'])
-    	z = np.array(data[data['host_ip'] == ip]['base_losses_str'])
+		x = np.array(data[data['host_ip'] == ip]['test_date'])
+		y = np.array(data[data['host_ip'] == ip]['discrimination_losses_str'])
+		z = np.array(data[data['host_ip'] == ip]['base_losses_str'])
 
-    	x_ax = []
-    	y_ax = []
-    	z_ax = []
-    	for i in range(0, len(x), 2):
-        	x_ax.append(str(x[i][:][6:16]))
-        	y_ax.append(str((y[i]/5000) * 100))
-        	z_ax.append(str((z[i]/5000) * 100))
-        
-    	return x_ax, y_ax, z_ax
+		x_ax = []
+		y_ax = []
+		z_ax = []
+		for i in range(0, len(x), 2):
+			x_ax.append(str(x[i][:][6:16]))
+			y_ax.append(str((y[i]/5000) * 100))
+			z_ax.append(str((z[i]/5000) * 100))
+
+		return x_ax, y_ax, z_ax
 
 
 	def draw(x_axis, y_axis, z_axis, t, isSecondDay):
-    
-    	if isSecondDay:
-        	start = 14.5
-        	end = 38.5
-    	else:
-        	start = 16.5
-        	end = 40.5
-    
-    	trace1 = {"x":x_axis, "y":y_axis, "marker": {"color": "red", "size": 12},
-              	"mode": "markers",
-              	"name": "Discriminated",
-              	"type": "scatter"}
+
+		if isSecondDay:
+			start = 14.5
+			end = 38.5
+		else:
+			start = 16.5
+			end = 40.5
+
+		trace1 = {"x":x_axis, "y":y_axis, "marker": {"color": "red", "size": 12},
+				"mode": "markers",
+				"name": "Discriminated",
+				"type": "scatter"}
 
 
-    	trace2 = {"x":x_axis, "y":z_axis, "marker": {"color": "green", "size": 12},
-              	"mode": "markers",
-              	"name": "Base",
-              	"type": "scatter"}
-
-
-
-    	data = [trace1, trace2]
-
-    	layout = {"title": "Packet Loss " + t,
-              	"xaxis": {"title": "Time", },
-              	"yaxis": {"title": "Percent of Loss"}}
-
-    	layout = go.Layout(
-        	width = 2500,
-        	height = 2500 ,
-        	xaxis=dict(
-            title = "Time",
-            #range=[start, end]
-        ),
-        	yaxis=dict(title="Percent of Loss"),
-
-        	title = 'Packet Loss ' + t,
-    	)
-
-    	fig = go.Figure(data=data, layout=layout)
-
-    	py.iplot(fig, filename = t ,image='png')    	
+		trace2 = {"x":x_axis, "y":z_axis, "marker": {"color": "green", "size": 12},
+				"mode": "markers",
+				"name": "Base",
+				"type": "scatter"}
 
 
 
+		data = [trace1, trace2]
+
+		layout = {"title": "Packet Loss " + t,
+				"xaxis": {"title": "Time", },
+				"yaxis": {"title": "Percent of Loss"}}
+
+		layout = go.Layout(
+			width = 2500,
+			height = 2500 ,
+			xaxis=dict(
+			title = "Time",
+			#range=[start, end]
+		),
+			yaxis=dict(title="Percent of Loss"),
+
+			title = 'Packet Loss ' + t,
+		)
+
+		fig = go.Figure(data=data, layout=layout)
+
+		py.iplot(fig, filename = t ,image='png')    	
 
 
 
@@ -301,9 +321,10 @@ def main():
 	#struct = structureData()
 	#struct.restructure(experiments)
 
-	#c = CombineExperiments()
-	#c.combine(0, experiments,sourceIp)
+	c = CombineExperiments()
+	c.combine(0, experiments,sourceIp)
 
+'''
 	g = graph()
 	g.parse()
 	for i in range(len(experiments)):
@@ -311,6 +332,7 @@ def main():
 		for key in arr[x].keys():
     		x ,y, z = g.parse(key, data)
     		g.draw(x,y,z,ip_destination[key], isSecondDay = False)	
+'''
 
 
 main()
