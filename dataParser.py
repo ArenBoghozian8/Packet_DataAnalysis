@@ -224,7 +224,6 @@ class CombineExperiments():
 
 
 
-
 						else:
 							pairTracker = pairTracker + 1
 							count,time = self.getNumberOfPacketsDroped(df,experiments[i])
@@ -246,7 +245,7 @@ class CombineExperiments():
 
 class graph():
 
-	def parse(ip, data):
+	def parse(self,ip, data):
 		x = np.array(data[data['host_ip'] == ip]['test_date'])
 		y = np.array(data[data['host_ip'] == ip]['discrimination_losses_str'])
 		z = np.array(data[data['host_ip'] == ip]['base_losses_str'])
@@ -262,7 +261,7 @@ class graph():
 		return x_ax, y_ax, z_ax
 
 
-	def draw(x_axis, y_axis, z_axis, t, isSecondDay):
+	def draw(self,x_axis, y_axis, z_axis, t, isSecondDay):
 
 		if isSecondDay:
 			start = 14.5
@@ -311,28 +310,32 @@ class graph():
 
 
 def main():
+
 	sourceIp = {'131.179.150.70':'planetlab1.cs.ucla.edu','131.179.150.72':'planetlab2.cs.ucla.edu', '192.16.125.12':'planetlab-2.ssvl.kth.se', '165.242.90.129':'pl2.sos.info.hiroshima-cu.ac.jp', '130.195.4.68':'planetlab1.ecs.vuw.ac.nz', '129.63.159.102':'planetlab2.cs.uml.edu', '192.91.235.230':'pluto.cs.brown.edu', '142.103.2.2':'planetlab2.cs.ubc.ca'}
+	experiments = ['Compression']
 	
-	experiments = ['Compression','SPQ', 'ShapingFinal']
-	
+	print('Start of the Program')
 	#parse = jasonParser()
 	#parse.generateJason(experiments)
 
 	#struct = structureData()
 	#struct.restructure(experiments)
 
-	c = CombineExperiments()
-	c.combine(0, experiments,sourceIp)
+	#c = CombineExperiments()
+	#c.combine(0, experiments,sourceIp)
 
-'''
+
 	g = graph()
-	g.parse()
 	for i in range(len(experiments)):
 		data = pd.read_csv(experiments[i] + '.csv')
-		for key in arr[x].keys():
-    		x ,y, z = g.parse(key, data)
-    		g.draw(x,y,z,ip_destination[key], isSecondDay = False)	
-'''
+		for key in sourceIp.keys():
+			print(key)
+			exit()
+			x ,y, z = g.parse(key, data)
+			g.draw(x,y,z,sourceIp[key], isSecondDay = False)
+
+	print('Program End')
+
 
 
 main()
