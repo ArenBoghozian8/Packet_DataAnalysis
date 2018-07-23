@@ -10,6 +10,12 @@ import csv
 import pandas as pd
 import time
 from datetime import datetime
+import random
+
+import plotly
+plotly.offline.init_notebook_mode(connected=True)
+import plotly.offline as py
+import plotly.graph_objs as go
 
 
 
@@ -124,6 +130,7 @@ class CombineExperiments():
 	def __init__(self):
 		self.ingore = 0
 
+	# Comines information from all teh relevent text files into one giant csv file for further anaysis
 	def combine(self, ignore_Num, experiments,sourceIp):
 		for i in range(len(experiments)):
 			w = csv.writer(open( experiments[i]+'.csv', 'w'))
@@ -211,6 +218,78 @@ class CombineExperiments():
 							discLoss = 0
 
 
+
+
+class graph():
+
+
+	def parse(ip, data):
+    	x = np.array(data[data['host_ip'] == ip]['test_date'])
+    	y = np.array(data[data['host_ip'] == ip]['discrimination_losses_str'])
+    	z = np.array(data[data['host_ip'] == ip]['base_losses_str'])
+
+    	x_ax = []
+    	y_ax = []
+    	z_ax = []
+    	for i in range(0, len(x), 2):
+        	x_ax.append(str(x[i][:][6:16]))
+        	y_ax.append(str((y[i]/5000) * 100))
+        	z_ax.append(str((z[i]/5000) * 100))
+        
+    	return x_ax, y_ax, z_ax
+
+
+	def draw(x_axis, y_axis, z_axis, t, isSecondDay):
+    
+    	if isSecondDay:
+        	start = 14.5
+        	end = 38.5
+    	else:
+        	start = 16.5
+        	end = 40.5
+    
+    	trace1 = {"x":x_axis, "y":y_axis, "marker": {"color": "red", "size": 12},
+              	"mode": "markers",
+              	"name": "Discriminated",
+              	"type": "scatter"}
+
+
+    	trace2 = {"x":x_axis, "y":z_axis, "marker": {"color": "green", "size": 12},
+              	"mode": "markers",
+              	"name": "Base",
+              	"type": "scatter"}
+
+
+
+    	data = [trace1, trace2]
+
+    	layout = {"title": "Packet Loss " + t,
+              	"xaxis": {"title": "Time", },
+              	"yaxis": {"title": "Percent of Loss"}}
+
+    	layout = go.Layout(
+        	width = 2500,
+        	height = 2500 ,
+        	xaxis=dict(
+            title = "Time",
+            #range=[start, end]
+        ),
+        	yaxis=dict(title="Percent of Loss"),
+
+        	title = 'Packet Loss ' + t,
+    	)
+
+    	fig = go.Figure(data=data, layout=layout)
+
+    	py.iplot(fig, filename = t ,image='png')    	
+
+
+
+
+
+
+
+
 def main():
 	sourceIp = {'131.179.150.70':'planetlab1.cs.ucla.edu','131.179.150.72':'planetlab2.cs.ucla.edu', '192.16.125.12':'planetlab-2.ssvl.kth.se', '165.242.90.129':'pl2.sos.info.hiroshima-cu.ac.jp', '130.195.4.68':'planetlab1.ecs.vuw.ac.nz', '129.63.159.102':'planetlab2.cs.uml.edu', '192.91.235.230':'pluto.cs.brown.edu', '142.103.2.2':'planetlab2.cs.ubc.ca'}
 	
@@ -222,8 +301,16 @@ def main():
 	#struct = structureData()
 	#struct.restructure(experiments)
 
-	g = CombineExperiments()
-	g.combine(0, experiments,sourceIp)
+	#c = CombineExperiments()
+	#c.combine(0, experiments,sourceIp)
+
+	g = graph()
+	g.parse()
+	for i in range(len(experiments)):
+		data = pd.read_csv(experiments[i] + '.csv')
+		for key in arr[x].keys():
+    		x ,y, z = g.parse(key, data)
+    		g.draw(x,y,z,ip_destination[key], isSecondDay = False)	
 
 
 main()
