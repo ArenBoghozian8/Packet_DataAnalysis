@@ -177,7 +177,7 @@ class CombineExperiments():
 
 	# Comines information from all teh relevent text files into one giant csv file for further anaysis
 	def combine(self, ignore_Num, experiments,sourceIp):
-		CompressionBadFiles = ['8601(','8602(','8535(','8706(']
+		CompressionBadFiles = ['8601(','8602(','8535(','8706(','8603(']
 
 		for i in range(len(experiments)):
 			w = csv.writer(open( experiments[i]+'.csv', 'w'))
