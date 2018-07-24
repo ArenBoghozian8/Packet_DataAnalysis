@@ -177,6 +177,7 @@ class CombineExperiments():
 
 	# Comines information from all teh relevent text files into one giant csv file for further anaysis
 	def combine(self, ignore_Num, experiments,sourceIp):
+		CompressionBadFiles = ['8601(','8602(','8535(','8706( ']
 
 		for i in range(len(experiments)):
 			w = csv.writer(open( experiments[i]+'.csv', 'w'))
@@ -196,7 +197,9 @@ class CombineExperiments():
 	
 
 				for file in file_array:
-					if country in file:
+					if country in file and file[:5] not in CompressionBadFiles:
+						print(file)
+
 
 						df = pd.read_csv('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+file)
 						count = 0
@@ -311,8 +314,9 @@ class graph():
 
 def main():
 
-	sourceIp = {'131.179.150.70':'planetlab1.cs.ucla.edu','131.179.150.72':'planetlab2.cs.ucla.edu', '192.16.125.12':'planetlab-2.ssvl.kth.se', '165.242.90.129':'pl2.sos.info.hiroshima-cu.ac.jp', '130.195.4.68':'planetlab1.ecs.vuw.ac.nz', '129.63.159.102':'planetlab2.cs.uml.edu', '192.91.235.230':'pluto.cs.brown.edu', '142.103.2.2':'planetlab2.cs.ubc.ca'}
+	#sourceIp = {'131.179.150.70':'planetlab1.cs.ucla.edu','131.179.150.72':'planetlab2.cs.ucla.edu', '192.16.125.12':'planetlab-2.ssvl.kth.se', '165.242.90.129':'pl2.sos.info.hiroshima-cu.ac.jp', '130.195.4.68':'planetlab1.ecs.vuw.ac.nz', '129.63.159.102':'planetlab2.cs.uml.edu', '192.91.235.230':'pluto.cs.brown.edu', '142.103.2.2':'planetlab2.cs.ubc.ca'}
 	experiments = ['Compression']
+	sourceIp = {'131.179.150.70':'planetlab1.cs.ucla.edu'}
 	
 	print('Start of the Program')
 	#parse = jasonParser()
@@ -321,21 +325,19 @@ def main():
 	#struct = structureData()
 	#struct.restructure(experiments)
 
-	#c = CombineExperiments()
-	#c.combine(0, experiments,sourceIp)
+	c = CombineExperiments()
+	c.combine(0, experiments,sourceIp)
 
-
+'''
 	g = graph()
 	for i in range(len(experiments)):
 		data = pd.read_csv(experiments[i] + '.csv')
 		for key in sourceIp.keys():
-			print(key)
-			exit()
 			x ,y, z = g.parse(key, data)
 			g.draw(x,y,z,sourceIp[key], isSecondDay = False)
 
 	print('Program End')
-
+'''
 
 
 main()
