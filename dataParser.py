@@ -131,6 +131,20 @@ class CombineExperiments():
 		self.ingore = 0
 
 
+	def getFirstPacketDropped(df):
+
+		count = 0
+		for index, row in df.iterrows():
+
+			if row["Loss vs No Loss"] != -1:
+				count = count + 1
+
+			else:
+				if count == 4999:
+					return 0
+				else:
+					return count
+
 
 	def getNumberOfPacketsDroped(self,df,experiment,ignore_Number_of_packets):
 		
@@ -187,7 +201,7 @@ class CombineExperiments():
 
 
 	# Comines information from all teh relevent text files into one giant csv file for further anaysis
-	def combine(self, ignore_Num, experiments,sourceIp):
+	def combine(self, ignore_Num, experiments,sourceIp, shoud_Ignore):
 		CompressionBadFiles = ['8601(','8602(','8535(','8706(','8603(']
 
 		for i in range(len(experiments)):
@@ -213,6 +227,9 @@ class CombineExperiments():
 						df = pd.read_csv('TestResults/'+experiments[i]+'/dataAnalysis/JsonInfo/structuredData/'+file)
 						count = 0
 						time = ""
+
+						if shoud_Ignore:
+							ignore_num = getFirstPacketDropped(df)
 
 						if experiments[i] == 'Compression':
 
@@ -320,7 +337,7 @@ class graph():
 def main():
 
 	sourceIp = {'131.179.150.70':'planetlab1.cs.ucla.edu','131.179.150.72':'planetlab2.cs.ucla.edu', '192.16.125.12':'planetlab-2.ssvl.kth.se', '165.242.90.129':'pl2.sos.info.hiroshima-cu.ac.jp', '129.63.159.102':'planetlab2.cs.uml.edu', '192.91.235.230':'pluto.cs.brown.edu', '142.103.2.2':'planetlab2.cs.ubc.ca'}
-	experiments = ['ShapingFinal']
+	experiments = ['Compression','ShapingFinal']
 	
 	print('Start of the Program')
 	#parse = jasonParser()
@@ -330,7 +347,7 @@ def main():
 	#struct.restructure(experiments)
 
 	c = CombineExperiments()
-	c.combine(0, experiments,sourceIp)
+	c.combine(0, experiments,sourceIp, True)
 
 '''
 	g = graph()
