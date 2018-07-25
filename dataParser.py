@@ -131,7 +131,7 @@ class CombineExperiments():
 		self.ingore = 0
 
 
-	def getFirstPacketDropped(df):
+	def getFirstPacketDropped(self,df):
 
 		count = 0
 		for index, row in df.iterrows():
@@ -202,6 +202,7 @@ class CombineExperiments():
 
 	# Comines information from all teh relevent text files into one giant csv file for further anaysis
 	def combine(self, ignore_Num, experiments,sourceIp, shoud_Ignore):
+		ignore = ignore_Num
 		CompressionBadFiles = ['8601(','8602(','8535(','8706(','8603(']
 
 		for i in range(len(experiments)):
@@ -229,7 +230,7 @@ class CombineExperiments():
 						time = ""
 
 						if shoud_Ignore:
-							ignore_num = getFirstPacketDropped(df)
+							ignore = self.getFirstPacketDropped(df)
 
 						if experiments[i] == 'Compression':
 
@@ -347,7 +348,7 @@ def main():
 	#struct.restructure(experiments)
 
 	c = CombineExperiments()
-	c.combine(0, experiments,sourceIp, True)
+	c.combine(0, experiments,sourceIp, False)
 
 '''
 	g = graph()
